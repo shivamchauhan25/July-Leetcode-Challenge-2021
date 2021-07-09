@@ -1,0 +1,73 @@
+Longest Increasing Subsequence
+
+
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements. For example, [3,6,2,7] is a subsequence of the array [0,3,1,6,2,2,7].
+
+ 
+
+Example 1:
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+Example 2:
+
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+Example 3:
+
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+ 
+
+Constraints:
+
+1 <= nums.length <= 2500
+-104 <= nums[i] <= 104
+ 
+
+Follow up: Can you come up with an algorithm that runs in O(n log(n)) time complexity?
+
+
+Solution:
+C++:
+
+class Solution {
+    
+    int func(vector<int>& v,int i)
+    {
+        int l=0;
+        int r=v.size()-1;
+            while(l<=r)
+            {
+                int mid=(l+r)/2;
+                if(mid==r)return mid;   //this condition is true when l=mid=r
+                if(l==mid)return v[mid]>=i?mid:mid+1;
+				//now since l,mid and r are not all equal, then this condition comes into play when mid=l and mid+1=r, and in that case we know that there are only two possible values of func, i.e. mid and mid+1, so we check if mid is the returning value else mid+1 is by default the returnning value.
+                if(v[mid]>=i and v[mid-1]<i)return mid;
+				//now that l!=mid!=r we check for index mid
+				//and if none of the above conditions are fulfilled than we shrink our range i.e. l,r 
+                if(v[mid]>i)r=mid-1;
+                else l=mid+1;
+            }
+        return 0;
+    }
+    
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int> v;
+        int n=nums.size();
+        v.push_back(nums[0]);
+        for(int i=1;i<n;i++)
+        {
+            if(nums[i]>v[v.size()-1])v.push_back(nums[i]);   
+			//if the vector is empty or nums[i]>all the entries we directly add it to the vector
+            else v[func(v,nums[i])]=nums[i];
+			// else we search for the location of the element in vector which is greater than or equal to nums[i] and replace that element with nums[i]
+			//func is a binary search function to return the index of the element to be replaced.
+        }
+        return v.size();
+    }
+};
